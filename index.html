@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WinGo Predictor</title>
+  <style>
+    body { background:#111; color:#eee; font-family:sans-serif; text-align:center; padding:2rem; }
+    .card { background:#222; border-radius:10px; padding:1rem; width:300px; margin:1rem auto; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { border-bottom:1px solid #333; padding:0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>WinGo Predictor</h1>
+  <div id="loading">⏳ Loading prediction...</div>
+  <div id="output" style="display:none;">
+    <table id="resultTable">
+      <thead>
+        <tr><th>အမှတ်</th><th>နံပါတ်</th><th>အရောင်</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function loadData() {
+      try {
+        const res = await fetch("/api/GetNoaverageEmerdList");
+        if (!res.ok) throw new Error("Network response failed");
+        const json = await res.json();
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("output").style.display = "block";
+
+        const tbody = document.querySelector("#resultTable tbody");
+        tbody.innerHTML = "";
+        json.data.list.forEach(item => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${item.issueNumber}</td><td>${item.number}</td><td>${item.colour}</td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        document.getElementById("loading").innerText = "❌ Fetch failed. Try again later.";
+      }
+    }
+    loadData();
+  </script>
+</body>
+</html>
